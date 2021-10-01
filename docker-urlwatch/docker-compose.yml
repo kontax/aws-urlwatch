@@ -1,0 +1,7 @@
+urlwatch:
+  image: docker-urlwatch
+  volumes:
+    - ./data:/root/.urlwatch
+  #restart: unless-stopped
+
+#docker run --rm --env-file info.env -v $(pwd)/data:/root/.urlwatch -t docker-urlwatch
