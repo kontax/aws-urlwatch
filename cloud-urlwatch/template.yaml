@@ -20,6 +20,66 @@ Resources:
   #
   # EFS
 
+
+  UrlwatchCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Sub "cloud-urlwatch-${StageName}"
+
+  UrlwatchTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub "cloud-urlwatch-task-${StageName}"
+      Cpu: "256"
+      Memory: "512"
+      NetworkMode: "awsvpc"
+      RequiresCompatibilities:
+        - "FARGATE"
+      TaskRoleArn: !GetAtt UrlwatchTaskRole.Arn
+      ExecutionRoleArn: !GetAtt UrlwatchTaskRole.Arn
+      ContainerDefinitions:
+        - Name: "docker-urlwatch"
+          Image: "couldinho/docker-urlwatch"
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group: "/ecs/docker-urlwatch"
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: "ecs"
+          Environment:
+            - Name: "UW_HOST"
+              Value: !Ref EmailHost
+            - Name: "UW_PORT"
+              Value: !Ref EmailPort
+            - Name: "UW_USER"
+              Value: !Ref EmailUser
+            - Name: "UW_PASS"
+              Value: !Ref EmailPass
+            - Name: "UW_FROM"
+              Value: !Ref EmailFrom
+            - Name: "UW_RCPT"
+              Value: !Ref EmailRcpt
+
+
+  #####
+  # Roles
+  ###
+
+  UrlwatchTaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "UrlwatchTaskRole-${StageName}"
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: !Sub "UrlwatchTaskPolicy-${StageName}
+
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
