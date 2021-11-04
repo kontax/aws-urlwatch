@@ -22,31 +22,33 @@ Parameters:
   EmailHost:
     Type: String
     Description: IMAP server details to email results to
-    Default:
+    Default: '{{resolve:secretsmanager:cloud-urlwatch/email-details:EmailHost}}'
   EmailPort:
     Type: String
     Description: Port of the IMAP
-    Default:
+    Default: '{{resolve:secretsmanager:cloud-urlwatch/email-details:EmailPort}}'
   EmailUser:
     Type: String
     Description: Username of the IMAP server
-    Default:
+    Default: '{{resolve:secretsmanager:cloud-urlwatch/email-details:EmailUser}}'
   EmailPass:
     Type: String
     Description: Password of the IMAP server
-    Default:
+    Default: '{{resolve:secretsmanager:cloud-urlwatch/email-details:EmailPass}}'
   EmailFrom:
     Type: String
     Description: Address to send the email from
-    Default:
+    Default: '{{resolve:secretsmanager:cloud-urlwatch/email-details:EmailFrom}}'
   EmailRcpt:
     Type: String
     Description: Address to send the email to
-    Default:
+    Default: '{{resolve:secretsmanager:cloud-urlwatch/email-details:EmailRcpt}}'
+
 
 Globals:
   Function:
     Timeout: 3
+    Runtime: python3.9
 
 Resources:
 
