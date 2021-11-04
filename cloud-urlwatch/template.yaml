@@ -3,19 +3,127 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
   aws-urlwatch
 
-  Sample SAM Template for aws-urlwatch
+  Scheduled running of URLWatch within an ECS task
 
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+
+Parameters:
+
+  # Secret keys
+  PushoverToken:
+    Type: String
+    Description: Token used to notify built packages via Pushover
+    Default: '{{resolve:ssm:pushoverToken:1}}'
+  PushoverUser:
+    Type: String
+    Description: User used to notify built packages via Pushover
+    Default: '{{resolve:ssm:pushoverUser:1}}'
+
+  # Email Details
+  EmailHost:
+    Type: String
+    Description: IMAP server details to email results to
+    Default:
+  EmailPort:
+    Type: String
+    Description: Port of the IMAP
+    Default:
+  EmailUser:
+    Type: String
+    Description: Username of the IMAP server
+    Default:
+  EmailPass:
+    Type: String
+    Description: Password of the IMAP server
+    Default:
+  EmailFrom:
+    Type: String
+    Description: Address to send the email from
+    Default:
+  EmailRcpt:
+    Type: String
+    Description: Address to send the email to
+    Default:
+
 Globals:
   Function:
     Timeout: 3
 
 Resources:
 
-  # Timer
-  #
-  # Function
-  #
+  ###
+  # Functions
+  ##
+
+  UrlwatchFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${AWS::StackName}-urlwatch-scheduler"
+      Description: Scheduled execution of the Urlwatch ECS task
+      CodeUri: urlwatch_lambda
+      Handler: urlwatch_start_ecs.handler
+      Timeout: 60
+      Role: !GetAtt ExtractRole.Arn
+      DeadLetterQueue:
+        TargetArn: !GetAtt ErrorQueue.Arn
+        Type: SQS
+      Policies:
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt ErrorQueue.QueueName
+      Environment:
+        Variables:
+          ECS_CLUSTER: !Ref UrlwatchCluster
+          TASK_DEFN: !Ref UrlwatchTaskDefinition
+      Events:
+        RepoUpdateSchedule:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 0 * * ? *)
+      Layers:
+        - !Ref AwsLayer
+
+  ErrorHandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${AWS::StackName}-urlwatch-error-handler"
+      Description: Catch and notify on errors in other functions
+      CodeUri: reporting
+      Handler: error_reporting.handler
+      Timeout: 30
+      Environment:
+        Variables:
+          PUSHOVER_TOKEN: !Ref PushoverToken
+          PUSHOVER_USER: !Ref PushoverUser
+      Events:
+        ErrorQueue:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt ErrorQueue.Arn
+
+  ###
+  # Layers
+  ##
+
+  AwsLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: !Sub "${AWS::StackName}-dependencies"
+      Description: Dependencies for PKGBUILD apps
+      ContentUri: src/
+      CompatibleRuntimes:
+        - python3.8
+        - python3.9
+      LicenseInfo: 'MIT'
+      RetentionPolicy: Retain
+
+  ###
+  # Queues
+  ##
+
+  ErrorQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub "${AWS::StackName}-error-queue"
+      VisibilityTimeout: 30
 
   ###
   # VPC
@@ -82,14 +190,14 @@ Resources:
   UrlwatchCluster:
     Type: AWS::ECS::Cluster
     Properties:
-      ClusterName: !Sub "cloud-urlwatch-${StageName}"
+      ClusterName: !Sub "${AWS::StackName}-cluster"
 
   UrlwatchTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     DependsOn:
       - UrlwatchFileSystem
     Properties:
-      Family: !Sub "cloud-urlwatch-task-${StageName}"
+      Family: !Sub "${AWS::StackName}-task"
       Cpu: "256"
       Memory: "512"
       NetworkMode: "awsvpc"
@@ -98,7 +206,7 @@ Resources:
       TaskRoleArn: !GetAtt UrlwatchTaskRole.Arn
       ExecutionRoleArn: !GetAtt UrlwatchTaskRole.Arn
       ContainerDefinitions:
-        - Name: "docker-urlwatch"
+        - Name: "${AWS::StackName}-docker-urlwatch"
           Image: "couldinho/docker-urlwatch"
           LogConfiguration:
             LogDriver: "awslogs"
@@ -129,14 +237,14 @@ Resources:
           TransitEncryption: DISABLED
 
 
-  #####
-  # Roles
   ###
+  # Roles
+  ##
 
   UrlwatchTaskRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub "UrlwatchTaskRole-${StageName}"
+      RoleName: !Sub "${AWS::StackName}-task-role"
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -146,18 +254,5 @@ Resources:
                 - ecs-tasks.amazonaws.com
             Action: sts:AssumeRole
       Policies:
-        - PolicyName: !Sub "UrlwatchTaskPolicy-${StageName}
+        - PolicyName: !Sub "${AWS::StackName}-task-policy"
 
-Outputs:
-  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
-  # Find out more about other implicit resources you can reference within SAM
-  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  HelloWorldApi:
-    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  HelloWorldFunction:
-    Description: "Hello World Lambda Function ARN"
-    Value: !GetAtt HelloWorldFunction.Arn
-  HelloWorldFunctionIamRole:
-    Description: "Implicit IAM Role created for Hello World function"
-    Value: !GetAtt HelloWorldFunctionRole.Arn
