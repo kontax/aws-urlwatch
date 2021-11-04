@@ -229,9 +229,9 @@ Resources:
               Value: !Ref EmailFrom
             - Name: "UW_RCPT"
               Value: !Ref EmailRcpt
-        MountPoints:
-          - SourceVolume: data
-            ContainerPath: /root/.urlwatch
+          MountPoints:
+            - SourceVolume: data
+              ContainerPath: /root/.urlwatch
       Volumes:
       - Name: data
         EFSVolumeConfiguration:
