@@ -35,8 +35,8 @@ RUN set -xe \
 VOLUME /root/.urlwatch
 WORKDIR /root/.urlwatch
 
-ADD run.sh          /run.sh
-ADD urlwatch.yaml   /urlwatch.yaml
+ADD scripts/run.sh          /run.sh
+ADD scripts/urlwatch.yaml   /urlwatch.yaml
 
 #CMD ["urlwatch", "--cache", "/root/.urlwatch/urlwatch.db"]
 ENTRYPOINT ["/run.sh"]
