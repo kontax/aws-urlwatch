@@ -22,27 +22,27 @@ Parameters:
   EmailHost:
     Type: String
     Description: IMAP server details to email results to
-    Default: '{{resolve:secretsmanager:cloud-urlwatch/email-details:EmailHost}}'
+    Default: '{{resolve:secretsmanager:cloud-urlwatch/email-details:SecretString:EmailHost}}'
   EmailPort:
     Type: String
     Description: Port of the IMAP
-    Default: '{{resolve:secretsmanager:cloud-urlwatch/email-details:EmailPort}}'
+    Default: '{{resolve:secretsmanager:cloud-urlwatch/email-details:SecretString:EmailPort}}'
   EmailUser:
     Type: String
     Description: Username of the IMAP server
-    Default: '{{resolve:secretsmanager:cloud-urlwatch/email-details:EmailUser}}'
+    Default: '{{resolve:secretsmanager:cloud-urlwatch/email-details:SecretString:EmailUser}}'
   EmailPass:
     Type: String
     Description: Password of the IMAP server
-    Default: '{{resolve:secretsmanager:cloud-urlwatch/email-details:EmailPass}}'
+    Default: '{{resolve:secretsmanager:cloud-urlwatch/email-details:SecretString:EmailPass}}'
   EmailFrom:
     Type: String
     Description: Address to send the email from
-    Default: '{{resolve:secretsmanager:cloud-urlwatch/email-details:EmailFrom}}'
+    Default: '{{resolve:secretsmanager:cloud-urlwatch/email-details:SecretString:EmailFrom}}'
   EmailRcpt:
     Type: String
     Description: Address to send the email to
-    Default: '{{resolve:secretsmanager:cloud-urlwatch/email-details:EmailRcpt}}'
+    Default: '{{resolve:secretsmanager:cloud-urlwatch/email-details:SecretString:EmailRcpt}}'
 
 
 Globals:
@@ -59,11 +59,12 @@ Resources:
   UrlwatchFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub "${AWS::StackName}-urlwatch-scheduler"
+      FunctionName: !Sub "${AWS::StackName}-scheduler"
       Description: Scheduled execution of the Urlwatch ECS task
       CodeUri: urlwatch_lambda
       Handler: urlwatch_start_ecs.handler
       Timeout: 60
+      Role: !GetAtt ExecuteTaskRole.Arn
       DeadLetterQueue:
         TargetArn: !GetAtt ErrorQueue.Arn
         Type: SQS
@@ -85,7 +86,7 @@ Resources:
   ErrorHandlerFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub "${AWS::StackName}-urlwatch-error-handler"
+      FunctionName: !Sub "${AWS::StackName}-error-handler"
       Description: Catch and notify on errors in other functions
       CodeUri: reporting
       Handler: error_reporting.handler
@@ -207,7 +208,7 @@ Resources:
       TaskRoleArn: !GetAtt UrlwatchTaskRole.Arn
       ExecutionRoleArn: !GetAtt UrlwatchTaskRole.Arn
       ContainerDefinitions:
-        - Name: "${AWS::StackName}-docker-urlwatch"
+        - Name: !Sub "${AWS::StackName}-container"
           Image: "couldinho/docker-urlwatch"
           LogConfiguration:
             LogDriver: "awslogs"
@@ -242,6 +243,50 @@ Resources:
   # Roles
   ##
 
+  ExecuteTaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${AWS::StackName}-execute-task-role"
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+                - ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: !Sub "${AWS::StackName}-execute-task-policy"
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sqs:SendMessageBatch
+                  - sqs:SendMessage
+                  - ecs:RunTask
+                  - iam:GetRole
+                  - iam:PassRole
+                Resource:
+                  - !Ref UrlwatchTaskDefinition
+                  - !GetAtt ErrorQueue.Arn
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource:
+                  '*'
+              - Effect: Allow
+                Action:
+                  - ecs:ListTasks
+                Resource:
+                  '*'
+                Condition:
+                  ArnEquals:
+                    ecs:cluster: !GetAtt UrlwatchCluster.Arn
+
   UrlwatchTaskRole:
     Type: AWS::IAM::Role
     Properties:
@@ -256,4 +301,13 @@ Resources:
             Action: sts:AssumeRole
       Policies:
         - PolicyName: !Sub "${AWS::StackName}-task-policy"
-
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource:
+                  - '*'
