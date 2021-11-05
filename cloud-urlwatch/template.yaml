@@ -64,7 +64,6 @@ Resources:
       CodeUri: urlwatch_lambda
       Handler: urlwatch_start_ecs.handler
       Timeout: 60
-      Role: !GetAtt ExtractRole.Arn
       DeadLetterQueue:
         TargetArn: !GetAtt ErrorQueue.Arn
         Type: SQS
@@ -142,7 +141,7 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       CidrBlock: 172.31.1.0/24
-      VpcId: !Ref MountTargetVPC
+      VpcId: !Ref UrlwatchVPC
       AvailabilityZone: "eu-west-1a"
 
   ###
