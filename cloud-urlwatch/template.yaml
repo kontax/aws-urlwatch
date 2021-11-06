@@ -213,7 +213,7 @@ Resources:
           LogConfiguration:
             LogDriver: "awslogs"
             Options:
-              awslogs-group: "/ecs/docker-urlwatch"
+              awslogs-group: !Sub "/ecs/${AWS::StackName}-docker"
               awslogs-region: !Ref AWS::Region
               awslogs-stream-prefix: "ecs"
           Environment:
@@ -237,6 +237,30 @@ Resources:
         EFSVolumeConfiguration:
           FilesystemId: !Ref UrlwatchFileSystem
           TransitEncryption: DISABLED
+
+  UrlwatchService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref UrlwatchCluster
+      DesiredCount: 1
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          SecurityGroups:
+            - !GetAtt UrlwatchVPC.DefaultSecurityGroup
+          Subnets:
+            - !Ref UrlwatchSubnet
+      PlatformVersion: '1.4.0'
+      TaskDefinition: !Ref UrlwatchTaskDefinition
+
+  UrlwatchTaskLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/ecs/${AWS::StackName}-docker"
+      RetentionInDays: 90
 
 
   ###
@@ -271,6 +295,7 @@ Resources:
                 Resource:
                   - !Ref UrlwatchTaskDefinition
                   - !GetAtt ErrorQueue.Arn
+                  - !GetAtt UrlwatchTaskRole.Arn
               - Effect: Allow
                 Action:
                   - logs:CreateLogGroup
@@ -311,3 +336,9 @@ Resources:
                   - logs:PutLogEvents
                 Resource:
                   - '*'
+              - Effect: Allow
+                Action:
+                  - elasticfilesystem:ClientMount
+                  - elasticfilesystem:ClientWrite
+                Resource:
+                  - !GetAtt UrlwatchAccessPoint.Arn
