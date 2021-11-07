@@ -101,10 +101,6 @@ Resources:
           Properties:
             Queue: !GetAtt ErrorQueue.Arn
 
-  ###
-  # Layers
-  ##
-
   AwsLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
@@ -117,10 +113,6 @@ Resources:
       LicenseInfo: 'MIT'
       RetentionPolicy: Retain
 
-  ###
-  # Queues
-  ##
-
   ErrorQueue:
     Type: AWS::SQS::Queue
     Properties:
@@ -128,7 +120,7 @@ Resources:
       VisibilityTimeout: 30
 
   ###
-  # VPC
+  # Networking
   ##
 
   UrlwatchVPC:
@@ -138,12 +130,53 @@ Resources:
       EnableDnsHostnames: True
       EnableDnsSupport: True
 
+  UrlwatchInternetGateway:
+    Type: AWS::EC2::InternetGateway
+
+  UrlwatchInternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref UrlwatchInternetGateway
+      VpcId: !Ref UrlwatchVPC
+
   UrlwatchSubnet:
     Type: AWS::EC2::Subnet
     Properties:
       CidrBlock: 172.31.1.0/24
       VpcId: !Ref UrlwatchVPC
       AvailabilityZone: "eu-west-1a"
+      MapPublicIpOnLaunch: True
+
+  UrlwatchNatGatewayEIP:
+    Type: AWS::EC2::EIP
+    DependsOn: UrlwatchInternetGatewayAttachment
+    Properties:
+      Domain: vpc
+
+  UrlwatchNatGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt UrlwatchNatGatewayEIP.AllocationId
+      SubnetId: !Ref UrlwatchSubnet
+
+  UrlwatchRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref UrlwatchVPC
+
+  UrlwatchRoute:
+    Type: AWS::EC2::Route
+    DependsOn: UrlwatchInternetGatewayAttachment
+    Properties:
+      RouteTableId: !Ref UrlwatchRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref UrlwatchInternetGateway
+
+  UrlwatchRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref UrlwatchRouteTable
+      SubnetId: !Ref UrlwatchSubnet
 
   ###
   # EFS
@@ -249,6 +282,7 @@ Resources:
       LaunchType: FARGATE
       NetworkConfiguration:
         AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
           SecurityGroups:
             - !GetAtt UrlwatchVPC.DefaultSecurityGroup
           Subnets:
