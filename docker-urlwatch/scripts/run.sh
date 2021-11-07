@@ -37,7 +37,7 @@ if [[ -z "${UW_RCPT}" ]]; then
     exit 1
 fi
 
-if [ ! -f /root/.urlwatch/urlwatch.yaml ]; then
+if [ ! -f /urlwatch.yaml ]; then
     echo -e "The urlwatch.yaml config file does not exist"
     exit 1
 fi
