@@ -75,6 +75,8 @@ Resources:
         Variables:
           ECS_CLUSTER: !Ref UrlwatchCluster
           TASK_DEFN: !Ref UrlwatchTaskDefinition
+          SUBNETS: !Ref UrlwatchSubnet
+          SECURITY_GROUPS: !GetAtt UrlwatchVPC.DefaultSecurityGroup
       Events:
         RepoUpdateSchedule:
           Type: Schedule
@@ -122,6 +124,13 @@ Resources:
   ###
   # Networking
   ##
+
+  # The ECS task needs to be on the same VPC as the EFS instance, and also
+  # needs internet connectivity to download the image from docker hub. This 
+  # VPC creates a single public subnet which routes through an internet 
+  # gateway to allow for this.
+  # TODO: This could probably be split into a private and public subnet
+  # for security reasons.
 
   UrlwatchVPC:
     Type: AWS::EC2::VPC
@@ -270,25 +279,6 @@ Resources:
         EFSVolumeConfiguration:
           FilesystemId: !Ref UrlwatchFileSystem
           TransitEncryption: DISABLED
-
-  UrlwatchService:
-    Type: AWS::ECS::Service
-    Properties:
-      Cluster: !Ref UrlwatchCluster
-      DesiredCount: 1
-      DeploymentConfiguration:
-        MaximumPercent: 200
-        MinimumHealthyPercent: 100
-      LaunchType: FARGATE
-      NetworkConfiguration:
-        AwsvpcConfiguration:
-          AssignPublicIp: ENABLED
-          SecurityGroups:
-            - !GetAtt UrlwatchVPC.DefaultSecurityGroup
-          Subnets:
-            - !Ref UrlwatchSubnet
-      PlatformVersion: '1.4.0'
-      TaskDefinition: !Ref UrlwatchTaskDefinition
 
   UrlwatchTaskLogs:
     Type: AWS::Logs::LogGroup
