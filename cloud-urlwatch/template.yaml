@@ -225,7 +225,7 @@ Resources:
           OwnerGid: "1000"
           OwnerUid: "1000"
           Permissions: "0777"
-        Path: "/efs"
+        Path: "/root/.urlwatch"
 
   ###
   # ECS
