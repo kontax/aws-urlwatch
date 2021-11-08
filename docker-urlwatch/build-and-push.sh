@@ -1,2 +1,2 @@
-docker build -t docker-urlwatch .
-docker push couldinho/docker-urlwatch
+docker build -t couldinho/docker-urlwatch .
+docker push couldinho/docker-urlwatch:latest
