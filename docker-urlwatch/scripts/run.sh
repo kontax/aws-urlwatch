@@ -6,6 +6,24 @@
 
 set -euo pipefail
 
+echo "$ whoami"
+whoami
+
+echo "$ cat /etc/passwd"
+cat /etc/passwd
+
+echo "$ mount"
+mount
+
+echo "$ ls /home/urlwatch"
+ls -al /home/urlwatch
+
+echo "$ ls /home/urlwatch/.urlwatch"
+ls -al /home/urlwatch/.urlwatch
+
+echo "$ ls /"
+ls -al /
+
 echo "[*] Checking environment variables have been set correctly"
 
 if [[ -z "${UW_HOST}" ]]; then
@@ -40,36 +58,22 @@ fi
 
 echo "[*] Looking for the urlwatch.yaml config file"
 
-if [ ! -f /urlwatch.yaml ]; then
+if [ ! -f /home/urlwatch/urlwatch.yaml ]; then
     echo -e "The urlwatch.yaml config file does not exist"
     exit 1
 fi
 
 echo "[*] Updating config file with environment variables"
 
-sed -i "s/#UW_HOST#/$UW_HOST/g" /urlwatch.yaml
-sed -i "s/#UW_PORT#/$UW_PORT/g" /urlwatch.yaml
-sed -i "s/#UW_USER#/$UW_USER/g" /urlwatch.yaml
-sed -i "s/#UW_PASS#/$UW_PASS/g" /urlwatch.yaml
-sed -i "s/#UW_FROM#/$UW_FROM/g" /urlwatch.yaml
-sed -i "s/#UW_RCPT#/$UW_RCPT/g" /urlwatch.yaml
-
-
-if [ ! -f /root/.urlwatch/test_file.txt ]; then
-    echo "Creating test file"
-    touch /root/.urlwatch/test_file.txt
-else
-    echo "Test file already exists"
-fi
-
-echo "$ ls /root"
-ls -al /root
-
-echo "$ ls /root/.urlwatch"
-ls -al /root/.urlwatch
-
-echo "Testing a file in the volume"
-echo "Here's the test file" >> /root/.urlwatch/test_file.txt
+sed -i "s/#UW_HOST#/$UW_HOST/g" /home/urlwatch/urlwatch.yaml
+sed -i "s/#UW_PORT#/$UW_PORT/g" /home/urlwatch/urlwatch.yaml
+sed -i "s/#UW_USER#/$UW_USER/g" /home/urlwatch/urlwatch.yaml
+sed -i "s/#UW_PASS#/$UW_PASS/g" /home/urlwatch/urlwatch.yaml
+sed -i "s/#UW_FROM#/$UW_FROM/g" /home/urlwatch/urlwatch.yaml
+sed -i "s/#UW_RCPT#/$UW_RCPT/g" /home/urlwatch/urlwatch.yaml
 
 echo "[*] Running urlwatch"
-urlwatch --cache /root/.urlwatch/urlwatch.db --config /urlwatch.yaml
+urlwatch \
+    --cache /home/urlwatch/.urlwatch/urlwatch.db \
+    --config /home/urlwatch/urlwatch.yaml \
+    --urls /home/urlwatch/urls.yaml

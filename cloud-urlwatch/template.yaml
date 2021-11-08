@@ -76,6 +76,7 @@ Resources:
           ECS_CLUSTER: !Ref UrlwatchCluster
           TASK_DEFN: !Ref UrlwatchTaskDefinition
           SUBNETS: !Ref UrlwatchSubnet
+          #TODO: Add a proper security group
           SECURITY_GROUPS: !GetAtt UrlwatchVPC.DefaultSecurityGroup
       Events:
         RepoUpdateSchedule:
@@ -202,7 +203,9 @@ Resources:
           - Effect: "Allow"
             Action:
               - "elasticfilesystem:ClientMount"
+              - "elasticfilesystem:ClientWrite"
             Principal:
+              #TODO: Test adding the ECS task here
               AWS: "*"
 
   UrlwatchMountPoint:
@@ -211,6 +214,7 @@ Resources:
       FileSystemId: !Ref UrlwatchFileSystem
       SubnetId: !Ref UrlwatchSubnet
       SecurityGroups:
+        #TODO: Add a proper security group
       - !GetAtt UrlwatchVPC.DefaultSecurityGroup
 
   UrlwatchAccessPoint:
@@ -225,7 +229,7 @@ Resources:
           OwnerGid: "1000"
           OwnerUid: "1000"
           Permissions: "0777"
-        Path: "/root/.urlwatch"
+        Path: "/urlwatch"
 
   ###
   # ECS
@@ -273,7 +277,8 @@ Resources:
               Value: !Ref EmailRcpt
           MountPoints:
             - SourceVolume: data
-              ContainerPath: /root/.urlwatch
+              ContainerPath: /home/urlwatch/.urlwatch
+              ReadOnly: false
       Volumes:
       - Name: data
         EFSVolumeConfiguration:

@@ -32,11 +32,16 @@ RUN set -xe \
                openssl-dev \
                python3-dev
 
-VOLUME /root/.urlwatch
-WORKDIR /root/.urlwatch
+RUN addgroup -S urlwatch -g 1000 && \
+    adduser -S urlwatch -G urlwatch -h /home/urlwatch -u 1000 -D
 
-ADD scripts/run.sh          /run.sh
-ADD scripts/urlwatch.yaml   /urlwatch.yaml
+VOLUME /home/urlwatch/.urlwatch
+WORKDIR /home/urlwatch/.urlwatch
+
+ADD scripts/run.sh          /home/urlwatch/run.sh
+ADD scripts/urlwatch.yaml   /home/urlwatch/urlwatch.yaml
+RUN chown -R urlwatch:urlwatch /home/urlwatch
+USER urlwatch
 
 #CMD ["urlwatch", "--cache", "/root/.urlwatch/urlwatch.db"]
-ENTRYPOINT ["/run.sh"]
+ENTRYPOINT ["/home/urlwatch/run.sh"]
