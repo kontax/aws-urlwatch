@@ -6,24 +6,6 @@
 
 set -euo pipefail
 
-echo "$ whoami"
-whoami
-
-echo "$ cat /etc/passwd"
-cat /etc/passwd
-
-echo "$ mount"
-mount
-
-echo "$ ls /home/urlwatch"
-ls -al /home/urlwatch
-
-echo "$ ls /home/urlwatch/.urlwatch"
-ls -al /home/urlwatch/.urlwatch
-
-echo "$ ls /"
-ls -al /
-
 echo "[*] Checking environment variables have been set correctly"
 
 if [[ -z "${UW_HOST}" ]]; then
