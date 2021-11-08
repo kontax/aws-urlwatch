@@ -33,7 +33,7 @@ def send_to_queue(queue_url, message):
     print(f"Message sent: {response['MessageId']}")
 
 
-def start_ecs_task(cluster, task_definition, overrides={}):
+def start_ecs_task(cluster, task_definition, subnets, security_groups, overrides={}):
     """Starts a new ECS task within a Fargate cluster to build the packages
 
     The ECS task pulls each package built one by one from the queue and adds
@@ -42,10 +42,12 @@ def start_ecs_task(cluster, task_definition, overrides={}):
     Args:
         cluster (str): The name of the cluster to start the task in
         task_definition (str); The name of the task definition to run
+        subnets (list): List of subnet id's to connect the task to
+        security_groups (list): List of security groups to apply to the task
         overrides (dict): Any ECS variable overrides to push to the container
     """
 
-    print(f"Starting new ECS task to build the package(s)")
+    print(f"Starting new ECS task")
 
     # Note: There's no ECS in the free version of localstack
     client = boto3.client('ecs')
@@ -57,9 +59,8 @@ def start_ecs_task(cluster, task_definition, overrides={}):
         platformVersion='LATEST',
         networkConfiguration={
             'awsvpcConfiguration': {
-                'subnets': [
-                    'subnet-9f4b60c6'
-                ],
+                'subnets':  subnets,
+                'securityGroups': security_groups,
                 'assignPublicIp': 'ENABLED'
             }
         },
