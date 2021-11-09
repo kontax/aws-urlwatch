@@ -29,13 +29,9 @@ jobs:
           password: ${{ env.DOCKER_PASS }}
 
       -
-        name: Navigate to working directory
-        run: cd docker-urlwatch
-
-      -
         name: Build and push
         uses: docker/build-push-action@v2
         with:
-          context: .
+          context: ./docker-urlwatch
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ env.DOCKER_USER }}/aur-pkg-update:latest
