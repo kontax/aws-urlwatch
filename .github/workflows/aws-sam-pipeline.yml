@@ -1,0 +1,41 @@
+name: AWS SAM Pipeline
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  AWS_STACK_NAME: cloud-urlwatch
+  AWS_REGION: eu-west-1
+  AWS_DEPLOYMENT_BUCKET: aws-sam-cli-managed-default-samclisourcebucket-1mjhgvy31ucmj
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_PARAMETER_OVERRIDES: ${{ secrets.AWS_PARAMETER_OVERRIDES }}
+
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    defaults:
+    run:
+      working-directory: ./cloud-urlwatch
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - uses: aws-actions/setup-sam@v1
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - run: sam build --use-container
+      - run: |
+          sam deploy \
+            --no-confirm-changeset \
+            --no-fail-on-empty-changeset \
+            --stack-name ${{ env.AWS_STACK_NAME }} \
+            --s3-bucket ${{ env.AWS_DEPLOYMENT_BUCKET }} \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --region ${{ env.AWS_REGION }} \
+            --parameter_overrides ${{ env.AWS_PARAMETER_OVERRIDES }}
