@@ -76,8 +76,7 @@ Resources:
           ECS_CLUSTER: !Ref UrlwatchCluster
           TASK_DEFN: !Ref UrlwatchTaskDefinition
           SUBNETS: !Ref UrlwatchSubnet
-          #TODO: Add a proper security group
-          SECURITY_GROUPS: !GetAtt UrlwatchVPC.DefaultSecurityGroup
+          SECURITY_GROUPS: !Ref UrlwatchTaskSecurityGroup
       Events:
         RepoUpdateSchedule:
           Type: Schedule
@@ -214,8 +213,7 @@ Resources:
       FileSystemId: !Ref UrlwatchFileSystem
       SubnetId: !Ref UrlwatchSubnet
       SecurityGroups:
-        #TODO: Add a proper security group
-      - !GetAtt UrlwatchVPC.DefaultSecurityGroup
+      - !Ref UrlwatchEfsSecurityGroup
 
   UrlwatchAccessPoint:
     Type: 'AWS::EFS::AccessPoint'
@@ -230,6 +228,19 @@ Resources:
           OwnerUid: "1000"
           Permissions: "0777"
         Path: "/home/urlwatch/config"
+
+  UrlwatchEfsSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "Security group for the EFS"
+      VpcId: !Ref UrlwatchVPC
+      SecurityGroupIngress:
+        -
+          Description: "Inbound port for EFS"
+          FromPort: 2049
+          IpProtocol: "tcp"
+          ToPort: 2049
+          SourceSecurityGroupId: !Ref UrlwatchTaskSecurityGroup
 
   ###
   # ECS
@@ -293,6 +304,38 @@ Resources:
     Properties:
       LogGroupName: !Sub "/ecs/${AWS::StackName}-docker"
       RetentionInDays: 90
+
+
+  UrlwatchTaskSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "Security group for the ECS Task"
+      VpcId: !Ref UrlwatchVPC
+      SecurityGroupEgress:
+        -
+          Description: "EFS mount port"
+          FromPort: 2049
+          IpProtocol: "tcp"
+          ToPort: 2049
+          CidrIp: 0.0.0.0/0
+        -
+          Description: "IMAP outbound port"
+          FromPort: 587
+          IpProtocol: "tcp"
+          ToPort: 587
+          CidrIp: 0.0.0.0/0
+        -
+          Description: "HTTP port for non-SSL traffic"
+          FromPort: 80
+          IpProtocol: "tcp"
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        -
+          Description: "HTTP port for SSL traffic"
+          FromPort: 443
+          IpProtocol: "tcp"
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
 
 
   ###
