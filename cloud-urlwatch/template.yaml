@@ -129,8 +129,6 @@ Resources:
   # needs internet connectivity to download the image from docker hub. This 
   # VPC creates a single public subnet which routes through an internet 
   # gateway to allow for this.
-  # TODO: This could probably be split into a private and public subnet
-  # for security reasons.
 
   UrlwatchVPC:
     Type: AWS::EC2::VPC
@@ -204,7 +202,6 @@ Resources:
               - "elasticfilesystem:ClientMount"
               - "elasticfilesystem:ClientWrite"
             Principal:
-              #TODO: Test adding the ECS task here
               AWS: "*"
 
   UrlwatchMountPoint:
