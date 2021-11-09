@@ -18,8 +18,8 @@ jobs:
   build-deploy:
     runs-on: ubuntu-latest
     defaults:
-    run:
-      working-directory: ./cloud-urlwatch
+      run:
+        working-directory: ./cloud-urlwatch
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
