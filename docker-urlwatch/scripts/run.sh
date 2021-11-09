@@ -59,3 +59,5 @@ urlwatch \
     --cache  /home/urlwatch/config/urlwatch.db \
     --config /home/urlwatch/urlwatch.yaml \
     --urls   /home/urlwatch/urls.yaml
+
+echo "[*] Finished running urlwatch successfully"
