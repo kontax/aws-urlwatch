@@ -38,4 +38,4 @@ jobs:
             --s3-bucket ${{ env.AWS_DEPLOYMENT_BUCKET }} \
             --capabilities CAPABILITY_NAMED_IAM \
             --region ${{ env.AWS_REGION }} \
-            --parameter_overrides ${{ env.AWS_PARAMETER_OVERRIDES }}
+            --parameter-overrides ${{ env.AWS_PARAMETER_OVERRIDES }}

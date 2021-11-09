@@ -1,5 +1,5 @@
 # aws-urlwatch
-[![Docker Build and Push](https://github.com/kontax/aws-urlwatch/actions/workflows/docker-build-and-push.yml/badge.svg)](https://github.com/kontax/aws-urlwatch/actions/workflows/docker-build-and-push.yml)
+[![Docker Build and Push](https://github.com/kontax/aws-urlwatch/actions/workflows/docker-build-and-push.yml/badge.svg)](https://github.com/kontax/aws-urlwatch/actions/workflows/docker-build-and-push.yml) [![AWS SAM Pipeline](https://github.com/kontax/aws-urlwatch/actions/workflows/aws-sam-pipeline.yml/badge.svg)](https://github.com/kontax/aws-urlwatch/actions/workflows/aws-sam-pipeline.yml)
 
 An AWS-based [urlwatch](https://github.com/thp/urlwatch) running on ECS which periodically runs the program to scan for any updates to select web-pages.
 
