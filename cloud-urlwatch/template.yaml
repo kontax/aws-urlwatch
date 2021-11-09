@@ -229,7 +229,7 @@ Resources:
           OwnerGid: "1000"
           OwnerUid: "1000"
           Permissions: "0777"
-        Path: "/urlwatch"
+        Path: "/home/urlwatch/config"
 
   ###
   # ECS
@@ -277,13 +277,16 @@ Resources:
               Value: !Ref EmailRcpt
           MountPoints:
             - SourceVolume: data
-              ContainerPath: /home/urlwatch/.urlwatch
+              ContainerPath: /home/urlwatch/config
               ReadOnly: false
       Volumes:
       - Name: data
         EFSVolumeConfiguration:
           FilesystemId: !Ref UrlwatchFileSystem
-          TransitEncryption: DISABLED
+          TransitEncryption: ENABLED
+          AuthorizationConfig:
+            AccessPointId: !Ref UrlwatchAccessPoint
+            IAM: ENABLED
 
   UrlwatchTaskLogs:
     Type: AWS::Logs::LogGroup

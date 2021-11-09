@@ -35,12 +35,10 @@ RUN set -xe \
 RUN addgroup -S urlwatch -g 1000 && \
     adduser -S urlwatch -G urlwatch -h /home/urlwatch -u 1000 -D
 
-VOLUME /home/urlwatch/.urlwatch
-WORKDIR /home/urlwatch/.urlwatch
-
 ADD scripts/run.sh          /home/urlwatch/run.sh
 ADD scripts/urlwatch.yaml   /home/urlwatch/urlwatch.yaml
 ADD scripts/urls.yaml       /home/urlwatch/urls.yaml
+
 RUN chown -R urlwatch:urlwatch /home/urlwatch
 USER urlwatch
 
