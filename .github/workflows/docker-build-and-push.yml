@@ -9,6 +9,7 @@ on:
 env:
   DOCKER_USER: ${{ secrets.DOCKER_USER }}
   DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
+  PACKAGE_NAME: docker-urlwatch
 
 jobs:
   docker:
@@ -32,6 +33,6 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v2
         with:
-          context: ./docker-urlwatch
+          context: ./${{ env.PACKAGE_NAME }}
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ env.DOCKER_USER }}/aur-pkg-update:latest
+          tags: ${{ env.DOCKER_USER }}/${{ env.PACKAGE_NAME }}:latest
