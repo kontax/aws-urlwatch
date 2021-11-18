@@ -68,7 +68,7 @@ Resources:
           Id: !Sub "${AWS::StackName}-scheduler"
           Arn: !GetAtt UrlwatchCluster.Arn
           RoleArn: !GetAtt ExecuteTaskRole.Arn
-          Input: !Sub '{ "containerOverrides": [ { "name": "${AWS::StackName}-container", "environment": [ { "name": "ECS_CLUSTER", "value": "${UrlwatchCluster}" }, { "name": "TASK_DEFN": "value": "${UrlwatchTaskDefinition}" }, { "name": "SUBNETS": "value": "${UrlwatchSubnet}" }, { "name": "SECURITY_GROUPS", "value": "${UrlwatchTaskSecurityGroup}" } ] } ] }'
+          Input: !Sub '{ "containerOverrides": [ { "name": "${AWS::StackName}-container", "environment": [ { "name": "ECS_CLUSTER", "value": "${UrlwatchCluster}" }, { "name": "TASK_DEFN", "value": "${UrlwatchTaskDefinition}" }, { "name": "SUBNETS", "value": "${UrlwatchSubnet}" }, { "name": "SECURITY_GROUPS", "value": "${UrlwatchTaskSecurityGroup}" } ] } ] }'
           EcsParameters:
             LaunchType: FARGATE
             NetworkConfiguration:
