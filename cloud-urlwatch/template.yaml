@@ -53,73 +53,32 @@ Globals:
 Resources:
 
   ###
-  # Functions
+  # Schedule
   ##
 
-  UrlwatchFunction:
-    Type: AWS::Serverless::Function
+  UrlwatchScheduleRule:
+    Type: AWS::Events::Rule
     Properties:
-      FunctionName: !Sub "${AWS::StackName}-scheduler"
-      Description: Scheduled execution of the Urlwatch ECS task
-      CodeUri: urlwatch_lambda
-      Handler: urlwatch_start_ecs.handler
-      Timeout: 60
-      Role: !GetAtt ExecuteTaskRole.Arn
-      DeadLetterQueue:
-        TargetArn: !GetAtt ErrorQueue.Arn
-        Type: SQS
-      Policies:
-        - SQSSendMessagePolicy:
-            QueueName: !GetAtt ErrorQueue.QueueName
-      Environment:
-        Variables:
-          ECS_CLUSTER: !Ref UrlwatchCluster
-          TASK_DEFN: !Ref UrlwatchTaskDefinition
-          SUBNETS: !Ref UrlwatchSubnet
-          SECURITY_GROUPS: !Ref UrlwatchTaskSecurityGroup
-      Events:
-        RepoUpdateSchedule:
-          Type: Schedule
-          Properties:
-            Schedule: cron(0 0 * * ? *)
-      Layers:
-        - !Ref AwsLayer
-
-  ErrorHandlerFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: !Sub "${AWS::StackName}-error-handler"
-      Description: Catch and notify on errors in other functions
-      CodeUri: reporting
-      Handler: error_reporting.handler
-      Timeout: 30
-      Environment:
-        Variables:
-          PUSHOVER_TOKEN: !Ref PushoverToken
-          PUSHOVER_USER: !Ref PushoverUser
-      Events:
-        ErrorQueue:
-          Type: SQS
-          Properties:
-            Queue: !GetAtt ErrorQueue.Arn
-
-  AwsLayer:
-    Type: AWS::Serverless::LayerVersion
-    Properties:
-      LayerName: !Sub "${AWS::StackName}-dependencies"
-      Description: Dependencies for PKGBUILD apps
-      ContentUri: src/
-      CompatibleRuntimes:
-        - python3.8
-        - python3.9
-      LicenseInfo: 'MIT'
-      RetentionPolicy: Retain
-
-  ErrorQueue:
-    Type: AWS::SQS::Queue
-    Properties:
-      QueueName: !Sub "${AWS::StackName}-error-queue"
-      VisibilityTimeout: 30
+      Description: "Scheduled execution of the ECS task"
+      Name: !Sub "${AWS::StackName}-update-rule"
+      ScheduleExpression: cron(0 0 * * ? *)
+      State: ENABLED
+      Targets:
+        -
+          Id: !Sub "${AWS::StackName}-scheduler"
+          Arn: !GetAtt UrlwatchCluster.Arn
+          RoleArn: !GetAtt ExecuteTaskRole.Arn
+          Input: !Sub '{ "containerOverrides": [ { "name": "${AWS::StackName}-container", "environment": [ { "name": "ECS_CLUSTER", "value": "${UrlwatchCluster}" }, { "name": "TASK_DEFN": "value": "${UrlwatchTaskDefinition}" }, { "name": "SUBNETS": "value": "${UrlwatchSubnet}" }, { "name": "SECURITY_GROUPS", "value": "${UrlwatchTaskSecurityGroup}" } ] } ] }'
+          EcsParameters:
+            LaunchType: FARGATE
+            NetworkConfiguration:
+              AwsVpcConfiguration:
+                Subnets:
+                  - !Ref UrlwatchSubnet
+                SecurityGroups:
+                  - !Ref UrlwatchTaskSecurityGroup
+                AssignPublicIp: ENABLED
+            TaskDefinitionArn: !Ref UrlwatchTaskDefinition
 
   ###
   # Networking
@@ -302,7 +261,6 @@ Resources:
       LogGroupName: !Sub "/ecs/${AWS::StackName}-docker"
       RetentionInDays: 90
 
-
   UrlwatchTaskSecurityGroup:
     Type: "AWS::EC2::SecurityGroup"
     Properties:
@@ -349,7 +307,7 @@ Resources:
           - Effect: Allow
             Principal:
               Service:
-                - lambda.amazonaws.com
+                - events.amazonaws.com
                 - ecs-tasks.amazonaws.com
             Action: sts:AssumeRole
       Policies:
@@ -359,22 +317,12 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - sqs:SendMessageBatch
-                  - sqs:SendMessage
                   - ecs:RunTask
                   - iam:GetRole
                   - iam:PassRole
                 Resource:
                   - !Ref UrlwatchTaskDefinition
-                  - !GetAtt ErrorQueue.Arn
                   - !GetAtt UrlwatchTaskRole.Arn
-              - Effect: Allow
-                Action:
-                  - logs:CreateLogGroup
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                Resource:
-                  '*'
               - Effect: Allow
                 Action:
                   - ecs:ListTasks
