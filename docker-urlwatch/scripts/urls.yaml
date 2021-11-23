@@ -21,6 +21,34 @@ filter:
   - html2text
 max_tries: 30
 ---
+name: "CSGO:metamod"
+url: "https://www.metamodsource.net/downloads.php?branch=stable"
+filter:
+  - css: ".snapshots>tbody>tr:nth-child(2)"
+  - html2text
+max_tries: 30
+---
+name: "CSGO:practicemode"
+url: "https://github.com/splewis/SteamWorks/releases/latest"
+filter:
+  - css: ".release-header>div>div>a"
+  - html2text
+max_tries: 30
+---
+name: "CSGO:sourcemod"
+url: "https://www.sourcemod.net/downloads.php?branch=stable"
+filter:
+  - css: ".snapshots>tbody>tr:nth-child(2)"
+  - html2text
+max_tries: 30
+---
+name: "CSGO:steamworks"
+url: "https://github.com/KyleSanderson/SteamWorks/releases/latest"
+filter:
+  - css: ".release-header>div>div>a"
+  - html2text
+max_tries: 30
+---
 name: "dunst"
 url: "https://github.com/dunst-project/dunst/releases/latest"
 filter:
