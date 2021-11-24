@@ -29,7 +29,7 @@ filter:
 max_tries: 30
 ---
 name: "CSGO:practicemode"
-url: "https://github.com/splewis/SteamWorks/releases/latest"
+url: "https://github.com/splewis/csgo-practice-mode/releases/latest"
 filter:
   - css: ".release-header>div>div>a"
   - html2text
