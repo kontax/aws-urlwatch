@@ -116,18 +116,6 @@ Resources:
       AvailabilityZone: "eu-west-1a"
       MapPublicIpOnLaunch: True
 
-  UrlwatchNatGatewayEIP:
-    Type: AWS::EC2::EIP
-    DependsOn: UrlwatchInternetGatewayAttachment
-    Properties:
-      Domain: vpc
-
-  UrlwatchNatGateway:
-    Type: AWS::EC2::NatGateway
-    Properties:
-      AllocationId: !GetAtt UrlwatchNatGatewayEIP.AllocationId
-      SubnetId: !Ref UrlwatchSubnet
-
   UrlwatchRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
