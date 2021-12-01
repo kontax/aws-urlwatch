@@ -7,6 +7,10 @@ filter:
   - strip
 max_tries: 30
 ---
+name: "Black Hat Rust Changelog"
+url: "https://raw.githubusercontent.com/skerkour/black-hat-rust/main/CHANGELOG.md"
+max_tries: 30
+---
 name: "CopyQ"
 url: "https://github.com/hluk/CopyQ/releases/latest"
 filter:
