@@ -102,9 +102,17 @@ max_tries: 30
 name: "linux-kernel-exploitation"
 url: "https://github.com/xairy/linux-kernel-exploitation/commits/master/README.md"
 filter:
-  - css: ".repository-content>div.js-navigation-container>div.TimelineItem:first-child>div.TimelineItem-body>ol>li>div>p>a"
+  - xpath: (//div[contains(@class,"js-details-container Details")]//a)[1]
   - html2text
+  - strip
 max_tries: 30
+---
+name: "Maximbax dotfiles"
+url: "https://github.com/maximbaz/dotfiles"
+filter:
+  - xpath: (//div[contains(@class,"js-details-container Details")]//a)[1]
+  - html2text
+  - strip
 ---
 name: "neovim"
 url: "https://github.com/neovim/neovim/releases"
