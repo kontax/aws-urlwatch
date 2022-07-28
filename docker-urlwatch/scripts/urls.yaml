@@ -2,7 +2,7 @@
 name: "bash-language-server"
 url: "https://github.com/mads-hartmann/bash-language-server/tags"
 filter:
-  - css: ".release-timeline-tags .release-entry:first-child h4 a"
+  - xpath: (//div[contains(@class, "commit js-details-container Details")]//h4//a)[1]
   - html2text
   - strip
 max_tries: 30
@@ -11,102 +11,84 @@ name: "Black Hat Rust Changelog"
 url: "https://raw.githubusercontent.com/skerkour/black-hat-rust/main/CHANGELOG.md"
 max_tries: 30
 ---
-name: "CopyQ"
-url: "https://github.com/hluk/CopyQ/releases/latest"
-filter:
-  - css: "#repo-content-pjax-container h1"
-  - html2text
-max_tries: 30
----
 name: "croc"
-url: "https://github.com/schollz/croc/releases/latest"
+url: "https://github.com/schollz/croc/releases"
 filter:
-  - css: "#repo-content-pjax-container h1"
-  - html2text
+  - xpath: '(//div[contains(@class,"d-flex flex-column flex-md-row my-5 flex-justify-center")]//h1//a)[1]'
+  - html2text: re
+  - strip
 max_tries: 30
 ---
 name: "CSGO:metamod"
 url: "https://www.metamodsource.net/downloads.php?branch=stable"
 filter:
-  - css: ".snapshots>tbody>tr:nth-child(2)"
+  - xpath: '(//table[contains(@class, "snapshots")]//tbody//tr[2])'
   - html2text
+  - strip
 max_tries: 30
 ---
 name: "CSGO:practicemode"
-url: "https://github.com/splewis/csgo-practice-mode/releases/latest"
+url: "https://github.com/splewis/csgo-practice-mode/releases"
 filter:
-  - css: "#repo-content-pjax-container h1"
-  - html2text
+  - xpath: '(//div[contains(@class,"d-flex flex-column flex-md-row my-5 flex-justify-center")]//h1//a)[1]'
+  - html2text: re
+  - strip
 max_tries: 30
 ---
 name: "CSGO:sourcemod"
 url: "https://www.sourcemod.net/downloads.php?branch=stable"
 filter:
-  - css: ".snapshots>tbody>tr:nth-child(2)"
+  - xpath: '(//table[contains(@class, "snapshots")]//tbody//tr[2])'
   - html2text
+  - strip
 max_tries: 30
 ---
 name: "CSGO:steamworks"
-url: "https://github.com/KyleSanderson/SteamWorks/releases/latest"
+url: "https://github.com/KyleSanderson/SteamWorks/releases"
 filter:
-  - css: "#repo-content-pjax-container h1"
-  - html2text
-max_tries: 30
----
-name: "dunst"
-url: "https://github.com/dunst-project/dunst/releases/latest"
-filter:
-  - css: "#repo-content-pjax-container h1"
-  - html2text
+  - xpath: '(//div[contains(@class,"d-flex flex-column flex-md-row my-5 flex-justify-center")]//h1//a)[1]'
+  - html2text: re
+  - strip
 max_tries: 30
 ---
 name: "fd"
-url: "https://github.com/sharkdp/fd/releases/latest"
+url: "https://github.com/sharkdp/fd/releases"
 filter:
-  - css: "#repo-content-pjax-container h1"
-  - html2text
-max_tries: 30
----
-name: "flameshot"
-url: "https://github.com/flameshot-org/flameshot/releases/latest"
-filter:
-  - css: "#repo-content-pjax-container h1"
-  - html2text
+  - xpath: '(//div[contains(@class,"d-flex flex-column flex-md-row my-5 flex-justify-center")]//h1//a)[1]'
+  - html2text: re
+  - strip
 max_tries: 30
 ---
 name: "ghidra"
-url: "https://github.com/NationalSecurityAgency/ghidra/releases/latest"
+url: "https://github.com/NationalSecurityAgency/ghidra/releases"
 filter:
-  - css: ".release-header>div>div>a"
-  - html2text
+  - xpath: '(//div[contains(@class,"d-flex flex-column flex-md-row my-5 flex-justify-center")]//h1//a)[1]'
+  - html2text: re
+  - strip
 max_tries: 30
 ---
 name: "grub-btrfs"
-url: "https://github.com/Antynea/grub-btrfs/releases/latest"
+url: "https://github.com/Antynea/grub-btrfs/releases"
 filter:
-  - css: "#repo-content-pjax-container h1"
-  - html2text
-max_tries: 30
----
-name: "i3"
-url: "https://github.com/i3/i3/releases/latest"
-filter:
-  - css: "#repo-content-pjax-container h1"
-  - html2text
+  - xpath: '(//div[contains(@class,"d-flex flex-column flex-md-row my-5 flex-justify-center")]//h1//a)[1]'
+  - html2text: re
+  - strip
 max_tries: 30
 ---
 name: "i3ipc-python"
-url: "https://github.com/acrisci/i3ipc-python/releases/latest"
+url: "https://github.com/acrisci/i3ipc-python/releases"
 filter:
-  - css: "#repo-content-pjax-container h1"
-  - html2text
+  - xpath: '(//div[contains(@class,"d-flex flex-column flex-md-row my-5 flex-justify-center")]//h1//a)[1]'
+  - html2text: re
+  - strip
 max_tries: 30
 ---
 name: "kitty"
-url: "https://github.com/kovidgoyal/kitty/releases/latest"
+url: "https://github.com/kovidgoyal/kitty/releases"
 filter:
-  - css: "#repo-content-pjax-container h1"
-  - html2text
+  - xpath: '(//div[contains(@class,"d-flex flex-column flex-md-row my-5 flex-justify-center")]//h1//a)[1]'
+  - html2text: re
+  - strip
 max_tries: 30
 ---
 name: "Kitty config"
@@ -125,94 +107,115 @@ filter:
 max_tries: 30
 ---
 name: "neovim"
-url: "https://github.com/neovim/neovim/releases/latest"
+url: "https://github.com/neovim/neovim/releases"
 filter:
-  - css: "#repo-content-pjax-container h1"
-  - html2text
+  - xpath: '(//div[contains(@class,"d-flex flex-column flex-md-row my-5 flex-justify-center")]//h1//a)[1]'
+  - html2text: re
+  - strip
 max_tries: 30
 ---
 name: "p10k"
-url: "https://github.com/romkatv/powerlevel10k/releases/latest"
+url: "https://github.com/romkatv/powerlevel10k/releases"
 filter:
-  - css: "#repo-content-pjax-container h1"
-  - html2text
+  - xpath: '(//div[contains(@class,"d-flex flex-column flex-md-row my-5 flex-justify-center")]//h1//a)[1]'
+  - html2text: re
+  - strip
 max_tries: 30
 ---
 name: "pam-u2f"
 url: "https://github.com/Yubico/pam-u2f/tags"
 filter:
-  - css: ".release-timeline-tags .release-entry:first-child h4 a"
+  - xpath: (//div[contains(@class,"commit js-details-container Details")]//h4//a)[1]
   - html2text
   - strip
 max_tries: 30
 ---
 name: "prettier"
-url: "https://github.com/prettier/prettier/releases/latest"
+url: "https://github.com/prettier/prettier/releases"
 filter:
-  - css: "#repo-content-pjax-container h1"
-  - html2text
-max_tries: 30
----
-name: "py3status changelog"
-url: "https://raw.githubusercontent.com/ultrabug/py3status/master/CHANGELOG"
-max_tries: 3
----
-name: "py3status"
-url: "https://github.com/ultrabug/py3status/releases/latest"
-filter: 
-  - css: ".release-timeline-tags .release-entry:first-child h4 a"
-  - html2text
+  - xpath: '(//div[contains(@class,"d-flex flex-column flex-md-row my-5 flex-justify-center")]//h1//a)[1]'
+  - html2text: re
   - strip
-max_tries: 3
+max_tries: 30
 ---
 name: "python-black"
 url: "https://github.com/ambv/black/tags"
 filter:
-  - css: ".release-timeline-tags .release-entry:first-child h4 a"
+  - xpath: (//div[contains(@class,"commit js-details-container Details")]//h4//a)[1]
   - html2text
   - strip
 max_tries: 30
 ---
 name: "python-jsonrpc-server"
-url: "https://github.com/palantir/python-jsonrpc-server/releases/latest"
+url: "https://github.com/palantir/python-jsonrpc-server/releases"
 filter:
-  - css: "#repo-content-pjax-container h1"
-  - html2text
+  - xpath: '(//div[contains(@class,"d-flex flex-column flex-md-row my-5 flex-justify-center")]//h1//a)[1]'
+  - html2text: re
+  - strip
 max_tries: 30
 ---
 name: "python-language-server"
-url: "https://github.com/palantir/python-language-server/releases/latest"
+url: "https://github.com/palantir/python-language-server/releases"
 filter:
-  - css: "#repo-content-pjax-container h1"
-  - html2text
+  - xpath: '(//div[contains(@class,"d-flex flex-column flex-md-row my-5 flex-justify-center")]//h1//a)[1]'
+  - html2text: re
+  - strip
 max_tries: 30
 ---
 name: "ripgrep"
-url: "https://github.com/BurntSushi/ripgrep/releases/latest"
+url: "https://github.com/BurntSushi/ripgrep/releases"
 filter:
-  - css: "#repo-content-pjax-container h1"
-  - html2text
+  - xpath: '(//div[contains(@class,"d-flex flex-column flex-md-row my-5 flex-justify-center")]//h1//a)[1]'
+  - html2text: re
+  - strip
 max_tries: 30
 ---
 name: "rmtrash"
-url: "https://github.com/PhrozenByte/rmtrash/releases/latest"
+url: "https://github.com/PhrozenByte/rmtrash/releases"
 filter:
-  - css: "#repo-content-pjax-container h1"
-  - html2text
+  - xpath: '(//div[contains(@class,"d-flex flex-column flex-md-row my-5 flex-justify-center")]//h1//a)[1]'
+  - html2text: re
+  - strip
 max_tries: 30
 ---
 name: "rofi"
-url: "https://github.com/davatorium/rofi/releases/latest"
+url: "https://github.com/davatorium/rofi/releases"
 filter:
-  - css: "#repo-content-pjax-container h1"
-  - html2text
+  - xpath: '(//div[contains(@class,"d-flex flex-column flex-md-row my-5 flex-justify-center")]//h1//a)[1]'
+  - html2text: re
+  - strip
 max_tries: 30
 ---
-name: "systembus-notify"
-url: "https://github.com/rfjakob/systembus-notify/releases/latest"
+name: "sway"
+url: "https://github.com/swaywm/sway/releases"
 filter:
-  - css: "#repo-content-pjax-container h1"
-  - html2text
+  - xpath: '(//div[contains(@class,"d-flex flex-column flex-md-row my-5 flex-justify-center")]//h1//a)[1]'
+  - html2text: re
+  - strip
+max_tries: 30
+---
+name: "swaybg"
+url: "https://github.com/swaywm/swaybg/releases"
+filter:
+  - xpath: '(//div[contains(@class,"d-flex flex-column flex-md-row my-5 flex-justify-center")]//h1//a)[1]'
+  - html2text: re
+  - strip
+max_tries: 30
+---
+name: "swaylock"
+url: "https://github.com/swaywm/swaylock/releases"
+filter:
+  - xpath: '(//div[contains(@class,"d-flex flex-column flex-md-row my-5 flex-justify-center")]//h1//a)[1]'
+  - html2text: re
+  - strip
+max_tries: 30
+---
+name: "teehee"
+url: "https://github.com/Gskartwii/teehee/releases"
+filter:
+  - xpath: '(//div[contains(@class,"d-flex flex-column flex-md-row my-5 flex-justify-center")]//h1//a)[1]'
+  - html2text: re
+  - strip
 max_tries: 30
 ---
 name: "Yubico security advisories"
@@ -222,9 +225,40 @@ filter:
   - html2text
 max_tries: 30
 ---
-name: "xplr"
-url: "https://github.com/sayanarijit/xplr/releases/latest"
+name: "waybar"
+url: "https://github.com/Alexays/Waybar/releases"
 filter:
-  - css: "#repo-content-pjax-container h1"
+  - xpath: '(//div[contains(@class,"d-flex flex-column flex-md-row my-5 flex-justify-center")]//h1//a)[1]'
+  - html2text: re
+  - strip
+max_tries: 30
+---
+name: "wl-clipboard"
+url: "https://github.com/bugaevc/wl-clipboard/releases"
+filter:
+  - xpath: '(//div[contains(@class,"d-flex flex-column flex-md-row my-5 flex-justify-center")]//h1//a)[1]'
+  - html2text: re
+  - strip
+max_tries: 30
+---
+name: "wlroots"
+url: "https://gitlab.freedesktop.org/wlroots/wlroots/-/tags"
+filter:
+  - xpath: (//a[contains(@class,"item-title ref-name")])[1]
   - html2text
+max_tries: 30
+---
+name: "wofi"
+url: "https://hg.sr.ht/~scoopta/wofi/tags"
+filter:
+  - css: ".event-list h4>a"
+  - html2text
+max_tries: 30
+---
+name: "xplr"
+url: "https://github.com/sayanarijit/xplr/releases"
+filter:
+  - xpath: '(//div[contains(@class,"d-flex flex-column flex-md-row my-5 flex-justify-center")]//h1//a)[1]'
+  - html2text: re
+  - strip
 max_tries: 30
