@@ -102,7 +102,7 @@ max_tries: 30
 name: "linux-kernel-exploitation"
 url: "https://github.com/xairy/linux-kernel-exploitation/commits/master/README.md"
 filter:
-  - xpath: (//div[contains(@class,"js-details-container Details")]//a)[1]
+  - xpath: (//div[contains(@class,"js-details-container Details")])[1]//a//span//strong
   - html2text
   - strip
 max_tries: 30
