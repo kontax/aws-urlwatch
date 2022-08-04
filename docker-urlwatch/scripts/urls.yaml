@@ -1,6 +1,6 @@
 ---
 name: "bash-language-server"
-url: "https://github.com/mads-hartmann/bash-language-server/tags"
+url: "https://github.com/bash-lsp/bash-language-server/tags"
 filter:
   - xpath: (//div[contains(@class, "commit js-details-container Details")]//h4//a)[1]
   - html2text
