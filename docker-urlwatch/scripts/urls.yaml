@@ -108,9 +108,9 @@ filter:
 max_tries: 30
 ---
 name: "Maximbax dotfiles"
-url: "https://github.com/maximbaz/dotfiles"
+url: "https://github.com/maximbaz/dotfiles/commits/master"
 filter:
-  - xpath: (//div[contains(@class,"js-details-container Details")]//a)[1]
+  - xpath: '(//div[contains(@class,"TimelineItem-body")]//ol)[1]'
   - html2text
   - strip
 ---
