@@ -11,6 +11,14 @@ name: "Black Hat Rust Changelog"
 url: "https://raw.githubusercontent.com/skerkour/black-hat-rust/main/CHANGELOG.md"
 max_tries: 30
 ---
+name: "coc.nvim"
+url: "https://github.com/neoclide/coc.nvim/releases"
+filter:
+  - xpath: '(//div[contains(@class,"d-flex flex-column flex-md-row my-5 flex-justify-center")]//h1//a)[1]'
+  - html2text: re
+  - strip
+max_tries: 30
+---
 name: "croc"
 url: "https://github.com/schollz/croc/releases"
 filter:
